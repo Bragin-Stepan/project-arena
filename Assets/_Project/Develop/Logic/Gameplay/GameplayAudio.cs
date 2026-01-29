@@ -1,5 +1,6 @@
 ﻿using System;
 using _Project.Develop.Logic.Characters;
+using _Project.Develop.Logic.Spawn;
 using _Project.Develop.Runtime.Utils.ReactiveManagement;
 using _Project.Develop.Shared.Const;
 using _Project.Develop.Utils.Audio;
@@ -10,18 +11,27 @@ namespace _Project.Develop.Logic.Gameplay
     public class GameplayAudio : IDisposable
     {
         private readonly AudioService _audioService;
-        private readonly Character _mainHero;
+        private readonly MainHeroSpawner _mainHeroSpawner;
+        
+        private Character _mainHero;
 
         public GameplayAudio(
             AudioService audioService,
-            Character mainHero,
+            MainHeroSpawner mainHeroSpawner,
             IReadOnlyVariable<bool> isGameplayStarted)
         {
             _audioService = audioService;
-            _mainHero = mainHero;
+            _mainHeroSpawner = mainHeroSpawner;
             
-            _mainHero.OnShoot += OnShoot;
+            _mainHeroSpawner.Spawned += OnMainHeroSpawned;
+            
             isGameplayStarted.Subscribe(OnStartGameplay);
+        }
+
+        private void OnMainHeroSpawned(Character mainHero)
+        {
+            _mainHero = mainHero;
+            _mainHero.OnShoot += OnShoot;
         }
 
         private void OnShoot(Vector3 startPoint, Vector3 endPoint)
@@ -39,6 +49,7 @@ namespace _Project.Develop.Logic.Gameplay
 
         public void Dispose()
         {
+            _mainHeroSpawner.Spawned -= OnMainHeroSpawned;
             _mainHero.OnShoot -= OnShoot;
         }
     }

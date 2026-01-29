@@ -14,12 +14,14 @@ namespace _Project.Develop.Logic.Characters
         IDirectionalMovable, 
         IRangeDamager,
         IDamageable,
-        IDeadable
+        IDeadable,
+        IDestroyable
     {
         [SerializeField] private Gun _gun;
         
         public event Action<float> Damaged;
         public event Action<IDeadable> Dead;
+        public event Action<IDestroyable> Destroyed;
 
         public event Action<Vector3, Vector3> OnShoot
         {
@@ -82,6 +84,12 @@ namespace _Project.Develop.Logic.Characters
         public void Stop() => _mover.Stop();
     
         public void Resume() => _mover.Resume();
+        
+        public void Destroy()
+        {
+            Destroyed?.Invoke(this);
+            Destroy(gameObject);
+        }
         
         private void OnDead(bool oldValue, bool newValue)
         {

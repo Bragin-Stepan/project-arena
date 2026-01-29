@@ -28,7 +28,6 @@ namespace _Project.Develop.Logic.Gameplay
         private MainHeroSpawner _mainHeroSpawner;
         private AgentCharacterSpawner _agentCharacterSpawner;
         private LevelConfigSO _levelConfig;
-        private Character _mainHero;
         
         public GameplayCycle(
             CoroutineRunner coroutineRunner,
@@ -44,10 +43,7 @@ namespace _Project.Develop.Logic.Gameplay
 
         public IEnumerator Start()
         {
-            Debug.Log("Press R to start game");
-            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.R));
-
-            _gameMode = new (_coroutineRunner, _audioService, _levelConfig, _mainHero, _agentCharacterSpawner);
+            _gameMode = new (_coroutineRunner, _audioService, _levelConfig, _mainHeroSpawner, _agentCharacterSpawner);
 
             _gameMode.OnWin += OnGameModeWin;
             _gameMode.OnDefeat += OnGameModeDefeat;
@@ -55,7 +51,7 @@ namespace _Project.Develop.Logic.Gameplay
             Func<GameMode, bool> winCondition = _conditionsFactory.CreateWinCondition(_levelConfig.WinType, _levelConfig.WinValue);
             Func<GameMode, bool> defeatCondition = _conditionsFactory.CreateDefeatCondition(_levelConfig.DefeatType, _levelConfig.DefeatValue);
 
-            _gameMode.Start(winCondition, defeatCondition);
+            yield return _gameMode.Start(winCondition, defeatCondition);
         }
 
         public void Update(float deltaTime)
@@ -75,8 +71,6 @@ namespace _Project.Develop.Logic.Gameplay
             
             _mainHeroSpawner = new (characterConfig, _controllersUpdateService, controllersFactory, charactersFactory);
             _agentCharacterSpawner = new (_coroutineRunner, agentCharacterConfig, _controllersUpdateService, controllersFactory, charactersFactory);
-            
-            _mainHero = _mainHeroSpawner.Spawn(_levelConfig.MainHeroSpawnPoint);
             
             yield return null;
         }

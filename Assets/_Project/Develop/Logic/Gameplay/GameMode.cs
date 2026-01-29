@@ -24,12 +24,15 @@ namespace _Project.Develop.Logic.Gameplay
 
         private readonly CoroutineRunner _coroutineRunner;
         private readonly LevelConfigSO _levelConfig;
-        private readonly Character _mainHero;
+        private readonly AudioService _audioService;
         private readonly AgentCharacterSpawner _agentCharacterSpawner;
+        private readonly MainHeroSpawner _mainHeroSpawner;
         private readonly GameplayAudio _gameplayAudio;
         
         private readonly List<AgentCharacter> _enemies = new();
         private readonly Dictionary<IDestroyable, IEnumerator> _destroyCoroutines = new();
+        
+        private Character _mainHero;
 
         private Func<GameMode, bool> _winCondition;
         private Func<GameMode, bool> _defeatCondition;
@@ -46,24 +49,28 @@ namespace _Project.Develop.Logic.Gameplay
             CoroutineRunner coroutineRunner,
             AudioService audioService,
             LevelConfigSO levelConfig,
-            Character mainHero,
+            MainHeroSpawner mainHeroSpawner,
             AgentCharacterSpawner agentCharacterSpawner)
         {
             _coroutineRunner = coroutineRunner;
             _levelConfig = levelConfig;
-            _mainHero = mainHero;
+            _audioService = audioService;
+            _mainHeroSpawner = mainHeroSpawner;
             _agentCharacterSpawner = agentCharacterSpawner;
-
+            
             _gameplayAudio = new(
-                audioService,
-                _mainHero,
+                _audioService,
+                _mainHeroSpawner,
                 IsRunning);
         }
 
-        public void Start(Func<GameMode, bool> winCondition, Func<GameMode, bool> defeatCondition)
+        public IEnumerator Start(Func<GameMode, bool> winCondition, Func<GameMode, bool> defeatCondition)
         {
-            Debug.Log("GameMode Start");
+            Debug.Log("Press R to start game");
+            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.R));
             
+            _mainHero = _mainHeroSpawner.Spawn(_levelConfig.MainHeroSpawnPoint);
+
             _winCondition = winCondition;
             _defeatCondition = defeatCondition;
 
@@ -137,6 +144,12 @@ namespace _Project.Develop.Logic.Gameplay
             
             _mainHeroIsDead.Value = true;
             ConditionsProcess();
+
+            if (_isRunning.Value)
+            {
+                _mainHero.Destroy();
+                _mainHero = _mainHeroSpawner.Spawn(_levelConfig.MainHeroSpawnPoint);
+            }
         }
 
         private IEnumerator TimerProcess()
