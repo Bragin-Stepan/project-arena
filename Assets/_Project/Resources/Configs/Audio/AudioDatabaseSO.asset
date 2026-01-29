@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe14dc5dd54447678a9b8518ef49fe35, type: 3}
+  m_Name: AudioDatabaseSO
+  m_EditorClassIdentifier: 
+  SoundEffects:
+  - PlaylistName: PopLow
+    Clips:
+    - Name: 
+      Clip: {fileID: 8300000, guid: 37b25f1028227e14b993a01924cd751c, type: 3}
+    Volume: 0.072
+  - PlaylistName: PistolShoot
+    Clips:
+    - Name: 
+      Clip: {fileID: 8300000, guid: 829deee26cda22a4c84df523421acc2e, type: 3}
+    Volume: 0.079
+  GameMusic:
+  - PlaylistName: Gameplay
+    Clips:
+    - Name: 
+      Clip: {fileID: 8300000, guid: b7cf6c6b49dcec54ab644e5a217c6f79, type: 3}
+    - Name: 
+      Clip: {fileID: 8300000, guid: db4dc2e12b090174989a9e7f61275cdc, type: 3}
+    - Name: 
+      Clip: {fileID: 8300000, guid: aab1b1a70f3469c40b97bf4092849a61, type: 3}
+    - Name: 
+      Clip: {fileID: 8300000, guid: 15aa472a897c5c04b95a922574c20c46, type: 3}
+    Volume: 0.122
