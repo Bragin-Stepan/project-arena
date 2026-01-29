@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AgentCharacterConfigSO
   m_EditorClassIdentifier: 
   <Prefab>k__BackingField: {fileID: 773964864665455547, guid: 16cf7f924e898e747aeaa00f24b48e47, type: 3}
-  <MoveSpeed>k__BackingField: 5
+  <MoveSpeed>k__BackingField: 4
   <RotateSpeed>k__BackingField: 900
   <MaxHealth>k__BackingField: 6
   <JumpSpeed>k__BackingField: 5

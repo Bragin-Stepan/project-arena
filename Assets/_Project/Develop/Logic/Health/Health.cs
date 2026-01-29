@@ -1,12 +1,14 @@
-﻿using _Project.Develop.Runtime.Utils.ReactiveManagement;
+﻿using System;
+using _Project.Develop.Runtime.Utils.ReactiveManagement;
 
-public class Health
+public class Health : IDisposable
 {
     private ReactiveVariable<float> _max;
     private ReactiveVariable<float> _current;
     private ReactiveVariable<float> _percent = new(1);
     
     private ReactiveVariable<bool> _isDead;
+    private IDisposable _disposable;
     
     public Health(float maxValue)
     {
@@ -14,7 +16,7 @@ public class Health
         _current = new ReactiveVariable<float>(maxValue);
         _isDead = new ReactiveVariable<bool>(false);
         
-        _current.Subscribe(OnCurrentChanged);
+        _disposable = _current.Subscribe(OnCurrentChanged);
     }
 
     public IReadOnlyVariable<bool> IsDead => _isDead;
@@ -65,5 +67,10 @@ public class Health
     private void OnCurrentChanged(float oldValue, float newValue)
     {
         _percent.Value = newValue / _max.Value;
+    }
+
+    public void Dispose()
+    {
+        _disposable?.Dispose();
     }
 }

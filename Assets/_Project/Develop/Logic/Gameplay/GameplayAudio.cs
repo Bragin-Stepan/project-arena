@@ -14,6 +14,7 @@ namespace _Project.Develop.Logic.Gameplay
         private readonly MainHeroSpawner _mainHeroSpawner;
         
         private Character _mainHero;
+        private IDisposable _disposable;
 
         public GameplayAudio(
             AudioService audioService,
@@ -25,7 +26,7 @@ namespace _Project.Develop.Logic.Gameplay
             
             _mainHeroSpawner.Spawned += OnMainHeroSpawned;
             
-            isGameplayStarted.Subscribe(OnStartGameplay);
+            _disposable = isGameplayStarted.Subscribe(OnStartGameplay);
         }
 
         private void OnMainHeroSpawned(Character mainHero)
@@ -51,6 +52,7 @@ namespace _Project.Develop.Logic.Gameplay
         {
             _mainHeroSpawner.Spawned -= OnMainHeroSpawned;
             _mainHero.OnShoot -= OnShoot;
+            _disposable.Dispose();
         }
     }
 }

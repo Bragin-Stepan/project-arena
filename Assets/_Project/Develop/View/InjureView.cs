@@ -16,6 +16,7 @@ public class InjureView : MonoBehaviour
      private const string InjureLayerName = "InjuredLayer";
      
      private IHealable _healTaker;
+     private IDisposable _disposable;
      
      private void Start()
      {
@@ -23,7 +24,7 @@ public class InjureView : MonoBehaviour
          {
              _healTaker = healTaker;
 
-             _healTaker.HealthPercent.Subscribe(HealthPercentChanged);
+             _disposable = _healTaker.HealthPercent.Subscribe(HealthPercentChanged);
          }
          
          _injureLayerIndex = _animator.GetLayerIndex(InjureLayerName);
@@ -35,5 +36,10 @@ public class InjureView : MonoBehaviour
              newValue < InjureHealthPercent ?
                  MaxLayerWeightValue : 
                  MinLayerWeightValue);
+     }
+
+     private void OnDestroy()
+     {
+         _disposable?.Dispose();
      }
 }

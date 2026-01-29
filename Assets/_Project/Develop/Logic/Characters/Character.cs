@@ -28,6 +28,11 @@ namespace _Project.Develop.Logic.Characters
             add => _gun.OnShoot += value;
             remove => _gun.OnShoot -= value;
         }
+        
+        public IReadOnlyVariable<bool> IsStopped => _mover.IsStopped;
+        public Vector3 Position => transform.position;
+        public Vector3 CurrentVelocity => _mover.CurrentVelocity;
+        public Quaternion CurrentRotation => _rotator.CurrentRotation;
 
         private IMover _mover;
         private IRotator _rotator;
@@ -35,11 +40,9 @@ namespace _Project.Develop.Logic.Characters
 
         private float _moveSpeed;
         private float _rotateSpeed;
-
-        public IReadOnlyVariable<bool> IsStopped => _mover.IsStopped;
-        public Vector3 Position => transform.position;
-        public Vector3 CurrentVelocity => _mover.CurrentVelocity;
-        public Quaternion CurrentRotation => _rotator.CurrentRotation;
+        
+        private IDisposable _disposable;
+        
         
         public void Initialize(
             IMover mover,
@@ -54,7 +57,7 @@ namespace _Project.Develop.Logic.Characters
             
             _health = new Health(config.MaxHealth);
 
-            _health.IsDead.Subscribe(OnDead);
+            _disposable = _health.IsDead.Subscribe(OnDead);
         }
 
         private void FixedUpdate()
@@ -95,6 +98,12 @@ namespace _Project.Develop.Logic.Characters
         {
             if (newValue)
                 Dead?.Invoke(this);
+        }
+
+        private void OnDestroy()
+        {
+            _health.Dispose();
+            _disposable.Dispose();
         }
     }
 }

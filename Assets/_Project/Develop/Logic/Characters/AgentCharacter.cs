@@ -25,15 +25,6 @@ namespace _Project.Develop.Logic.Characters
         
         [SerializeField] private NavMeshAgent _agent;
         
-        private IMover _mover;
-        private IRotator _rotator;
-        private AgentJumper _jumper;
-        private Health _health;
-        
-        private float _moveSpeed ;
-        private float _rotateSpeed;
-        private AnimationCurve _jumpCurve;
-        
         public IReadOnlyVariable<bool> IsStopped => _mover.IsStopped;
         public IReadOnlyVariable<bool> CanHeal => _health.IsDead;
         public IReadOnlyVariable<float> HealthPercent => _health.Percent;
@@ -44,6 +35,17 @@ namespace _Project.Develop.Logic.Characters
         public Quaternion CurrentRotation => _rotator.CurrentRotation;
         
         public bool InJumpProcess => _jumper.InProcess;
+        
+        private IMover _mover;
+        private IRotator _rotator;
+        private AgentJumper _jumper;
+        private Health _health;
+        
+        private float _moveSpeed ;
+        private float _rotateSpeed;
+        private AnimationCurve _jumpCurve;
+        
+        private IDisposable _disposable;
         
         public void Initialize(IMover mover, IRotator rotator, AgentCharacterConfigSO config)
         {
@@ -63,7 +65,7 @@ namespace _Project.Develop.Logic.Characters
 
             _health = new Health(config.MaxHealth);
 
-            _health.IsDead.Subscribe(OnDead);
+            _disposable = _health.IsDead.Subscribe(OnDead);
         }
 
         private void FixedUpdate()
@@ -121,6 +123,12 @@ namespace _Project.Develop.Logic.Characters
         private void OnDead(bool oldValue, bool newValue)
         {
             Dead?.Invoke(this);
+        }
+
+        private void OnDestroy()
+        {
+            _health.Dispose();
+            _disposable.Dispose();
         }
     }
 }
